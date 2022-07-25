@@ -84,7 +84,7 @@ void create_node_linked_list(char character_array[], int character_frequency[])
 
   for (int i = 0; i < CHARACTER_COUNT; i++)
   {
-    if (character_frequency[i] > 0)
+    if (character_frequency[i] >= 0)
     {
       insert_node(character_array[i], character_frequency[i]);
     }
@@ -141,12 +141,12 @@ void create_huffman_tree()
     {
       if (list_pointer != smallest_pointer)
       {
-        if (list_pointer->freq <= smallest_pointer->freq)
+        if (list_pointer->freq < smallest_pointer->freq)
         {
           second_smallest_pointer = smallest_pointer;
           smallest_pointer = list_pointer;
         }
-        else if ((second_smallest_pointer == NULL) || (list_pointer->freq >= smallest_pointer->freq && list_pointer->freq <= second_smallest_pointer->freq))
+        else if ((second_smallest_pointer == NULL) || (list_pointer->freq >= smallest_pointer->freq && list_pointer->freq < second_smallest_pointer->freq))
         {
           second_smallest_pointer = list_pointer;
         }
