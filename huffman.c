@@ -317,10 +317,8 @@ int main(int argc, char *argv[])
   for (int i = 0; i < CHARACTER_COUNT; i++)
   {
     character_array[i] = i;
-    character_frequency[i] = 0;
   }
 
-  load_frequency(argv[1], character_frequency);                  // creates array with frequency of each character in text file
   create_node_linked_list(character_array, character_frequency); // creates doubly linked list of nodes containning char and freq
   create_huffman_tree();
   printf("Node:%c, Code:", head->data);
