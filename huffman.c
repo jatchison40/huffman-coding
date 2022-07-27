@@ -324,6 +324,54 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
   }
 }
 
+int read_buffer_bits(int position, int length, FILE *input_file)
+{
+  char binary_array[LOOKUP_TABLE_INDEX_SIZE];
+
+  int read_bits = 0;
+  while (read_bits < length)
+  { // continue reading bits until we have read enough
+    char inputbyte = fgetc(input_file);
+
+    for (int bit_index = 7; bit_index > 0; bit_index--)
+    {
+      int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
+      if (digit == 0)
+      {
+        binary_array[read_bits] = 0;
+      }
+      else
+      {
+        binary_array[read_bits] = 1;
+      }
+      read_bits++;
+
+      if (read_bits == length)
+      {
+        // if we have filled up binary_array
+        break;
+      }
+    }
+  }
+
+  // Convert binary chars in binary_array to decimal representation
+}
+
+int BinaryToInt(char s[], int length)
+{
+  int value = 0;
+  int bitValue = 1;
+
+  for (int i = length - 1; i >= 0; i--)
+  {
+    if (s[i] == '1')
+      value += bitValue;
+
+    bitValue <<= 1;
+  }
+  return value;
+}
+
 void load_frequency(char *input_filename, int character_frequency[])
 {
   FILE *fp = fopen(input_filename, "rb");
