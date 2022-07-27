@@ -384,19 +384,18 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-  char character_array[CHARACTER_COUNT];
-  int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 176910, 199, 110, 21, 2, 9, 12, 71, 842, 905, 193, 601, 11741, 2660, 12265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 88, 1603, 126, 1426, 5, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 34, 516, 1829, 2844, 152, 126, 1140, 1577, 1223, 566, 60, 220, 60, 72, 95, 2, 57205, 11806, 17620, 30686, 92645, 15903, 16699, 44764, 47418, 1202, 8370, 31745, 17516, 48484, 55880, 12287, 890, 37464, 41860, 68368, 22214, 6842, 15965, 1102, 16208, 442, 235, 4, 235, 0, 0};
-  char temp_array[CHARACTER_COUNT];
+	char character_array[CHARACTER_COUNT];
+	int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17691, 240, 213, 283, 150, 200, 222, 254, 842, 905, 350, 601, 6741, 2660, 6265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 250, 1603, 226, 1426, 350, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 250, 516, 1829, 2844, 300, 300, 1140, 1577, 1223, 566, 220, 220, 195, 182, 245, 280, 57205, 7806, 7620, 10686, 40645, 7903, 8699, 17764, 17418, 1202, 8370, 21745, 17516, 18484, 15880, 12287, 890, 37464, 16860, 15368, 19214, 6842, 15965, 1102, 16208, 442, 235, 233, 235, 0, 0};
+	char temp_array[CHARACTER_COUNT];
 
   for (int i = 0; i < CHARACTER_COUNT; i++)
   {
     character_array[i] = i;
   }
 
-  create_node_linked_list(character_array, character_frequency); // creates doubly linked list of nodes containning char and freq
-  create_huffman_tree();
-  printf("Node:%c, Code:", head->data);
-  extract_encode_bit_combinaion(head, temp_array, 0);
+	create_node_linked_list(character_array, character_frequency); // creates doubly linked list of nodes containning char and freq
+	create_huffman_tree();
+	extract_encode_bit_combinaion(head, temp_array, 0);
 
   encode_input_text(argv[1], argv[2]);
   decode_file(argv[2], "decoded.txt");
