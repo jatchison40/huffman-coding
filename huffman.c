@@ -218,9 +218,9 @@ void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int arra
       // printf("Node:%c, Code:", node->data);
       for (int i = 0; i < array_index; i++)
       {
-        printf("%d", array[i]);
+        // printf("%d", array[i]);
       }
-      printf("\n");
+      // printf("\n");
       return;
     }
     if (node->child1 != NULL)
@@ -271,11 +271,67 @@ void build_lookup_table()
     }
     if (!leaf_found)
     {
-      printf("NOT FOUND %d \n", index);
+      // printf("NOT FOUND %d \n", index);
     }
 
     // printf("\n");
   }
+}
+
+int binary_to_int(char s[], int length)
+{
+  // convert binary string to decimal representation so that we can index lookup table
+  int value = 0;
+  int bitValue = 1;
+
+  for (int i = length - 1; i >= 0; i--)
+  {
+    if (s[i] == '1')
+      value += bitValue;
+
+    bitValue <<= 1;
+  }
+  return value;
+}
+
+void read_buffer_bits(int position, int length, FILE *input_file)
+{
+  char binary_array[LOOKUP_TABLE_INDEX_SIZE];
+
+  int read_bits = 0;
+  while (read_bits < length)
+  { // continue reading bits until we have read enough
+    char inputbyte = fgetc(input_file);
+    printf("%c\n", inputbyte);
+
+    for (int bit_index = 7; bit_index >= 0; bit_index--)
+    {
+      int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
+      // printf("%d", digit % 10);
+      if (digit == 0)
+      {
+        binary_array[read_bits] = '0';
+      }
+      else
+      {
+        binary_array[read_bits] = '1';
+      }
+      read_bits++;
+
+      if (read_bits == length)
+      {
+        // if we have filled up binary_array
+        break;
+      }
+    }
+  }
+  for (int i = 0; i < length; i++)
+  {
+    printf("%c", binary_array[i]);
+  }
+
+  int number = binary_to_int(binary_array, length);
+  printf("\n%d\n", number);
 }
 
 void decode_with_lookup_table(char *input_filename, char *output_filename)
@@ -289,87 +345,41 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
     exit(4);
   }
 
-  char inputbyte = fgetc(input_file);
-  int read_bits = 0;
-  int binary_array[LOOKUP_TABLE_INDEX_SIZE];
-  while (inputbyte != EOF)
-  {
+  read_buffer_bits(0, 11, input_file);
 
-    for (int bit_index = 7; bit_index > 0; bit_index--)
-    {
-      if (read_bits == LOOKUP_TABLE_INDEX_SIZE)
-      {
-        // get int representation of binary_array to index into decode lookup table
-        for (int i = 0; i < LOOKUP_TABLE_INDEX_SIZE; i++)
-        {
-          printf("%d", binary_array[i]);
-        }
-        printf("\n");
-        break;
-      }
-      int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
-      if (digit == 0)
-      {
-        binary_array[read_bits] = 0;
-      }
-      else
-      {
-        binary_array[read_bits] = 1;
-      }
-      read_bits++;
-    }
-    if (read_bits < LOOKUP_TABLE_INDEX_SIZE)
-    {
-    }
-  }
-}
+  // char inputbyte = fgetc(input_file);
+  // int read_bits = 0;
+  // int binary_array[LOOKUP_TABLE_INDEX_SIZE];
+  // while (inputbyte != EOF)
+  // {
 
-int read_buffer_bits(int position, int length, FILE *input_file)
-{
-  char binary_array[LOOKUP_TABLE_INDEX_SIZE];
-
-  int read_bits = 0;
-  while (read_bits < length)
-  { // continue reading bits until we have read enough
-    char inputbyte = fgetc(input_file);
-
-    for (int bit_index = 7; bit_index > 0; bit_index--)
-    {
-      int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
-      if (digit == 0)
-      {
-        binary_array[read_bits] = 0;
-      }
-      else
-      {
-        binary_array[read_bits] = 1;
-      }
-      read_bits++;
-
-      if (read_bits == length)
-      {
-        // if we have filled up binary_array
-        break;
-      }
-    }
-  }
-
-  // Convert binary chars in binary_array to decimal representation
-}
-
-int BinaryToInt(char s[], int length)
-{
-  int value = 0;
-  int bitValue = 1;
-
-  for (int i = length - 1; i >= 0; i--)
-  {
-    if (s[i] == '1')
-      value += bitValue;
-
-    bitValue <<= 1;
-  }
-  return value;
+  //   for (int bit_index = 7; bit_index > 0; bit_index--)
+  //   {
+  //     if (read_bits == LOOKUP_TABLE_INDEX_SIZE)
+  //     {
+  //       // get int representation of binary_array to index into decode lookup table
+  //       for (int i = 0; i < LOOKUP_TABLE_INDEX_SIZE; i++)
+  //       {
+  //         printf("%d", binary_array[i]);
+  //       }
+  //       printf("\n");
+  //       break;
+  //     }
+  //     int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
+  //     if (digit == 0)
+  //     {
+  //       binary_array[read_bits] = 0;
+  //     }
+  //     else
+  //     {
+  //       binary_array[read_bits] = 1;
+  //     }
+  //     read_bits++;
+  //   }
+  //   if (read_bits < LOOKUP_TABLE_INDEX_SIZE)
+  //   {
+  //   }
+  // }
 }
 
 void load_frequency(char *input_filename, int character_frequency[])
@@ -539,6 +549,6 @@ int main(int argc, char *argv[])
 
   encode_input_text(argv[1], argv[2]);
   build_lookup_table();
-  // decode_with_lookup_table("input.txt", "output.txt");
+  decode_with_lookup_table("input.txt", "output.txt");
   //  decode_file(argv[2], "decoded.txt");
 }
