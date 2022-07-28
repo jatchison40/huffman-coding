@@ -3,8 +3,8 @@
 #include <string.h>
 
 #define CHARACTER_COUNT 128
-#define LOOKUP_TABLE_SIZE 1024
-#define LOOKUP_TABLE_INDEX_SIZE 10
+#define LOOKUP_TABLE_SIZE 4096
+#define LOOKUP_TABLE_INDEX_SIZE 12
 
 struct TreeNode
 {
@@ -215,12 +215,12 @@ void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int arra
         encode_array[node->data][i] = array[i];
       }
       encode_array_length[node->data] = array_index;
-      printf("Node:%c, Code:", node->data);
+      // printf("Node:%c, Code:", node->data);
       for (int i = 0; i < array_index; i++)
       {
-        printf("%d", array[i]);
+        // printf("%d", array[i]);
       }
-      printf("\n");
+      // printf("\n");
       return;
     }
     if (node->child1 != NULL)
@@ -310,9 +310,9 @@ int read_buffer_bits(int length, int offset, FILE *input_file)
   while (read_bits < length && inputbyte != EOF)
   { // continue reading bits until we have read enough
 
-    printf("%c\n", inputbyte);
+    // printf("%c\n", inputbyte);
 
-    for (int bit_index = 7; bit_index >= 0; bit_index--)
+    for (int bit_index = 7; bit_index >= (0 + offset); bit_index--)
     {
 
       int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
@@ -339,9 +339,10 @@ int read_buffer_bits(int length, int offset, FILE *input_file)
   {
     printf("%c", binary_array[i]);
   }
+  printf("\n");
 
   int number = binary_to_int(binary_array, length);
-  printf("\n%d\n", number);
+  // printf("\n%d\n", number);
   return number;
 }
 
@@ -362,13 +363,17 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
 
   while (1)
   {
-    offset = processed_bits % 8;               // 3
-    current_byte = processed_bits / 8;         // 1
-    fseek(input_file, current_byte, SEEK_SET); // go to current byte
+    offset = processed_bits % 8;
+    current_byte = processed_bits / 8;
+    // printf("%d", offset);
+
+    fseek(input_file, current_byte, SEEK_SET);
 
     int lookup_index = read_buffer_bits(LOOKUP_TABLE_INDEX_SIZE, offset, input_file);
+    // printf("%d\n", lookup_index);
     if (lookup_index == -1)
     {
+      printf("REACHED END OF FILE");
       break;
     }
 
