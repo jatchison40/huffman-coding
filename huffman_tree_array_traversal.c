@@ -25,7 +25,6 @@ void create_huffman_decode_table();
 void detach_node(struct TreeNode *node);
 int is_leaf_node(struct TreeNode *node);
 void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int array_index);
-void load_frequency(char *input_filename, int character_frequency[]);
 void encode_input_text(char *input_filename, char *output_filename);
 void huffman_array_hybrid_decoding(char *input_filename, char *output_filename);
 
@@ -136,7 +135,7 @@ void create_huffman_tree()
 
   if (list_size == 1 && is_leaf_node(list_pointer))
   {
-    insert_parent_node(smallest_pointer->freq, 0); // this doesnt make sense
+    insert_parent_node(smallest_pointer->freq, 0);
     tail->child1 = smallest_pointer;
     detach_node(smallest_pointer);
   }
@@ -160,7 +159,6 @@ void create_huffman_tree()
       }
       list_pointer = list_pointer->right;
     }
-    // printf("Loop done\n");
     insert_parent_node(smallest_pointer->freq, second_smallest_pointer->freq);
     tail->child1 = smallest_pointer;
     tail->child2 = second_smallest_pointer;
@@ -168,19 +166,17 @@ void create_huffman_tree()
     detach_node(second_smallest_pointer);
     list_pointer = smallest_pointer = head;
     second_smallest_pointer = NULL;
-    // print_list();
   }
 }
 
 void create_huffman_decode_table()
 {
   struct TreeNode *list_pointer = head;
-
   int bit;
   int bit_count;
   int bit_variable;
 
-  for (int i = 0; i < 16; i++)
+  for (int i = 0; i < 16; i += 2)
   {
     bit_count = 4;
     bit_variable = i;
@@ -199,6 +195,26 @@ void create_huffman_decode_table()
       }
     }
     treeNode_array[i] = list_pointer;
+    list_pointer = head;
+
+    // Second loop
+    bit_count = 4;
+    bit_variable = i + 1;
+    while (bit_count > 0)
+    {
+      bit = 1 & (bit_variable >> 3);
+      bit_variable = bit_variable << 1;
+      bit_count--;
+      if (bit == 0)
+      {
+        list_pointer = list_pointer->child1;
+      }
+      else
+      {
+        list_pointer = list_pointer->child2;
+      }
+    }
+    treeNode_array[i + 1] = list_pointer;
     list_pointer = head;
   }
 }
@@ -280,23 +296,6 @@ void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int arra
     }
   }
   return;
-}
-
-void load_frequency(char *input_filename, int character_frequency[])
-{
-  FILE *fp = fopen(input_filename, "rb");
-  if (fp == NULL)
-  {
-    printf("Error: Filename could not be opened\n");
-    exit(2);
-  }
-  char c = fgetc(fp);
-  while (c != EOF)
-  {
-    character_frequency[c]++;
-    c = fgetc(fp);
-  }
-  fclose(fp);
 }
 
 void encode_input_text(char *input_filename, char *output_filename)
