@@ -301,18 +301,17 @@ int read_buffer_bits(int length, int offset, FILE *input_file)
 
   int read_bits = 0;
   char inputbyte = fgetc(input_file);
-  if (inputbyte == EOF)
-  {
-    return -1;
-  }
+  int first_byte_offset = offset;
+
   inputbyte = inputbyte << offset;
 
-  while (read_bits < length && inputbyte != EOF)
+  while (read_bits < length)
   { // continue reading bits until we have read enough
 
     // printf("%c\n", inputbyte);
+    // printf("\nchar: %d\n", inputbyte);
 
-    for (int bit_index = 7; bit_index >= (0 + offset); bit_index--)
+    for (int bit_index = 7; bit_index >= first_byte_offset; bit_index--)
     {
 
       int digit = 1 << (bit_index)&inputbyte; // gives the bit at position bit_index in inputbyte
@@ -320,21 +319,27 @@ int read_buffer_bits(int length, int offset, FILE *input_file)
       if (digit == 0)
       {
         binary_array[read_bits] = '0';
+        // printf("0");
       }
       else
       {
         binary_array[read_bits] = '1';
+        // printf("1");
       }
       read_bits++;
 
       if (read_bits == length)
       {
-        // if we have filled up binary_array
+        // printf("\nEND\n");
+        //  if we have filled up binary_array
         break;
       }
     }
+    first_byte_offset = 0;
     inputbyte = fgetc(input_file);
   }
+
+  printf("%d\n", length);
   for (int i = 0; i < length; i++)
   {
     printf("%c", binary_array[i]);
@@ -342,7 +347,12 @@ int read_buffer_bits(int length, int offset, FILE *input_file)
   printf("\n");
 
   int number = binary_to_int(binary_array, length);
-  // printf("\n%d\n", number);
+
+  if (length < LOOKUP_TABLE_INDEX_SIZE)
+  {
+    // printf("ENDING");
+    number = number << (LOOKUP_TABLE_INDEX_SIZE - length);
+  }
   return number;
 }
 
@@ -357,9 +367,17 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
     exit(4);
   }
 
+  long total_bits = 0;
+  total_bits = total_bits | fgetc(input_file) << 24;
+  total_bits = total_bits | fgetc(input_file) << 16;
+  total_bits = total_bits | fgetc(input_file) << 8;
+  total_bits = total_bits | fgetc(input_file);
+
   int processed_bits = 0;
   int offset;
   int current_byte;
+  int ending_bits = -1;
+  int length = LOOKUP_TABLE_INDEX_SIZE;
 
   while (1)
   {
@@ -367,18 +385,25 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
     current_byte = processed_bits / 8;
     // printf("%d", offset);
 
-    fseek(input_file, current_byte, SEEK_SET);
+    fseek(input_file, current_byte + 4, SEEK_SET);
 
-    int lookup_index = read_buffer_bits(LOOKUP_TABLE_INDEX_SIZE, offset, input_file);
-    // printf("%d\n", lookup_index);
-    if (lookup_index == -1)
+    if (processed_bits + LOOKUP_TABLE_INDEX_SIZE >= total_bits)
     {
-      printf("REACHED END OF FILE");
-      break;
+      length = LOOKUP_TABLE_INDEX_SIZE - (processed_bits + LOOKUP_TABLE_INDEX_SIZE - total_bits);
     }
 
-    fputc(decode_lookup[lookup_index][0], output_file);
+    int lookup_index = read_buffer_bits(length, offset, input_file);
+    // printf("%d\n", lookup_index);
+
     processed_bits = processed_bits + decode_lookup[lookup_index][1];
+
+    fputc(decode_lookup[lookup_index][0], output_file);
+    // printf("%c,%ld\n", decode_lookup[lookup_index][0], total_bits);
+
+    if (processed_bits == total_bits)
+    {
+      return;
+    }
   }
 }
 
@@ -409,9 +434,16 @@ void encode_input_text(char *input_filename, char *output_filename)
     exit(3);
   }
 
+  // save to bytes at the beginning to go back and fill in number of bits
+  fputc(0, output_file);
+  fputc(0, output_file);
+  fputc(0, output_file);
+  fputc(0, output_file);
+
   char input_c = fgetc(input_file);
   char output_byte_buffer = 0;
   int bitcount = 0;
+  int total_bits = 0;
   while (input_c != EOF)
   {
 
@@ -422,6 +454,7 @@ void encode_input_text(char *input_filename, char *output_filename)
       if (bitcount == 8)
       {
         fputc(output_byte_buffer, output_file);
+        total_bits = total_bits + 8;
         output_byte_buffer = 0;
         bitcount = 0;
       }
@@ -437,90 +470,23 @@ void encode_input_text(char *input_filename, char *output_filename)
   if (bitcount != 0)
   {
     padding_bits_count = 8 - bitcount;
+    total_bits = total_bits + bitcount;
     // printf("PADDING BITS COUNT: %d\n", padding_bits_count);
-    while (bitcount != 8)
-    {
-      output_byte_buffer = output_byte_buffer << 1;
-      bitcount++;
-    }
-    fputc(output_byte_buffer, output_file);
+    fputc(0, output_file);
+    fseek(output_file, -1, SEEK_END);
+    // printf("%d\n", output_byte_buffer << padding_bits_count);
+    fputc(output_byte_buffer << padding_bits_count, output_file);
   }
+
+  fseek(output_file, 0, SEEK_SET);
+  fputc((char)(total_bits >> 24 & 0xFF), output_file);
+  fputc((char)(total_bits >> 16 & 0xFF), output_file);
+  fputc((char)(total_bits >> 8 & 0xFF), output_file);
+  fputc((char)(total_bits & 0xFF), output_file);
   // fputc(0, output_file);
   // fputc(0xFF, output_file);
   // fputc(padding_bits_count, output_file);
   /////this outputs any remaining bits leftover with padding bits, then outputs 0000 0000 1111 1111 {# of padding bits}
-
-  fclose(input_file);
-  fclose(output_file);
-}
-
-void decode_file(char *input_filename, char *output_filename)
-{
-  FILE *input_file = fopen(input_filename, "rb");
-  FILE *output_file = fopen(output_filename, "w");
-
-  if (input_file == NULL || output_file == NULL)
-  {
-    printf("Error: Filename could not be opened\n");
-    exit(4);
-  }
-
-  struct TreeNode *pointer = head;
-  unsigned char input_c = fgetc(input_file);
-  unsigned char input_c2 = fgetc(input_file);
-  unsigned char input_c3 = fgetc(input_file);
-  // printf("-----------------------\n");
-  // printf("%d\n", input_c);
-  // printf("%d\n", input_c2);
-  // printf("%d\n", input_c3);
-  // printf("-----------------------\n");
-  int buffer_byte = input_c;
-  int bit_count = 8;
-  int bit;
-  int flag = 1;
-  while (1)
-  {
-    bit = 1 & (buffer_byte >> 7);
-    buffer_byte = buffer_byte << 1;
-    bit_count--;
-    // printf("%d\n", bit);
-
-    if (bit == 0)
-    {
-      pointer = pointer->child1;
-    }
-    else
-    {
-      pointer = pointer->child2;
-    }
-    if (is_leaf_node(pointer))
-    {
-      fputc(pointer->data, output_file);
-      pointer = head;
-    }
-    if (bit_count == 0)
-    {
-      // printf("\n");
-      if (flag)
-      {
-        input_c = input_c2;
-        input_c2 = input_c3;
-        input_c3 = fgetc(input_file);
-        bit_count = 8;
-        buffer_byte = input_c;
-      }
-      else
-      {
-        break;
-      }
-
-      if ((input_c2 == 0x00) && (input_c3 == 0xFF))
-      {
-        flag = 0;
-        bit_count = 8 - fgetc(input_file);
-      }
-    }
-  }
 
   fclose(input_file);
   fclose(output_file);
@@ -551,5 +517,4 @@ int main(int argc, char *argv[])
 
   build_lookup_table();
   decode_with_lookup_table(argv[2], "decoded.txt");
-  //   decode_file(argv[2], "decoded.txt");
 }
