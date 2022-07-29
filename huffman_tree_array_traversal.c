@@ -87,7 +87,8 @@ void insert_parent_node(int data, int freq)
 void create_node_linked_list(char character_array[], int character_frequency[])
 {
   int count = 0;
-  for (int i = 0; i < CHARACTER_COUNT; i++)
+  int i;
+  for (i = 0; i < CHARACTER_COUNT; i++)
   {
     if (character_frequency[i] > 0)
     {
@@ -132,15 +133,18 @@ void create_huffman_tree()
   struct TreeNode *list_pointer = head;
   struct TreeNode *smallest_pointer = head;
   struct TreeNode *second_smallest_pointer = NULL;
+  register int local_list_size = list_size;
 
-  if (list_size == 1 && is_leaf_node(list_pointer))
+  if (local_list_size == 1 && is_leaf_node(list_pointer))
   {
     insert_parent_node(smallest_pointer->freq, 0);
+    local_list_size++;
     tail->child1 = smallest_pointer;
     detach_node(smallest_pointer);
+    local_list_size--;
   }
 
-  while (list_size > 1)
+  while (local_list_size > 1)
   {
     // find 2 smallest nodes
     while (list_pointer != NULL)
@@ -160,13 +164,17 @@ void create_huffman_tree()
       list_pointer = list_pointer->right;
     }
     insert_parent_node(smallest_pointer->freq, second_smallest_pointer->freq);
+    local_list_size++;
     tail->child1 = smallest_pointer;
     tail->child2 = second_smallest_pointer;
     detach_node(smallest_pointer);
+    local_list_size--;
     detach_node(second_smallest_pointer);
+    local_list_size--;
     list_pointer = smallest_pointer = head;
     second_smallest_pointer = NULL;
   }
+  list_size = local_list_size;
 }
 
 void create_huffman_decode_table()
@@ -176,7 +184,8 @@ void create_huffman_decode_table()
   int bit_count;
   int bit_variable;
 
-  for (int i = 0; i < 16; i += 2)
+  int i;
+  for (i = 0; i < 16; i += 2)
   {
     bit_count = 4;
     bit_variable = i;
@@ -245,7 +254,6 @@ void detach_node(struct TreeNode *node)
     node->left = NULL;
     node->right = NULL;
   }
-  list_size--;
 }
 
 int is_leaf_node(struct TreeNode *node)
@@ -264,24 +272,14 @@ void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int arra
       int bit_count = 0;
       int prefix = 0;
       int prefix_flag = 0;
-      printf("-----------------------------------\n");
-      for (int i = 0; i < array_index; i++)
+      int i;
+      for (i = 0; i < array_index; i++)
       {
-        printf("%d", array[i]);
         encode_array[node->data][i] = array[i];
         bit_combination = bit_combination << 1 | array[i];
         bit_count++;
       }
-      printf("\n");
-      printf("-----------------------------------\n");
-
       encode_array_length[node->data] = array_index;
-      printf("Node:%c, Code:", node->data);
-      for (int i = 0; i < array_index; i++)
-      {
-        printf("%d", array[i]);
-      }
-      printf("\n");
       return;
     }
     if (node->child1 != NULL)
@@ -314,10 +312,9 @@ void encode_input_text(char *input_filename, char *output_filename)
   while (input_c != EOF)
   {
 
-    // printf("--> %c, %d, = ", input_c, encode_array_length[input_c]);
-    for (int i = 0; i < encode_array_length[input_c]; i++)
+    int i;
+    for (i = 0; i < encode_array_length[input_c]; i++)
     {
-      // printf("%d", encode_array[input_c][i]);
       if (bitcount == 8)
       {
         fputc(output_byte_buffer, output_file);
@@ -328,14 +325,14 @@ void encode_input_text(char *input_filename, char *output_filename)
       output_byte_buffer = output_byte_buffer << 1 | encode_array[input_c][i];
       bitcount++;
     }
-    // printf("\n");
     input_c = fgetc(input_file);
   }
   int padding_bits_count = 0;
-  if (bitcount != 0)
+
+  // if bitcount more than 0, no need to add padding bits
+  if (bitcount)
   {
     padding_bits_count = 8 - bitcount;
-    // printf("PADDING BITS COUNT: %d\n", padding_bits_count);
     while (bitcount != 8)
     {
       output_byte_buffer = output_byte_buffer << 1;
@@ -428,13 +425,8 @@ void huffman_array_hybrid_decoding(char *input_filename, char *output_filename)
       }
     }
 
-    //
-    //
-    //
-
     if (bit_count == 8)
     {
-      // printf("\n");
       if (EOF_flag)
       {
         input_c = input_c2;
@@ -473,7 +465,8 @@ int main(int argc, char *argv[])
   int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17691, 240, 213, 283, 150, 200, 222, 254, 842, 905, 350, 601, 6741, 2660, 6265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 250, 1603, 226, 1426, 350, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 250, 516, 1829, 2844, 300, 300, 1140, 1577, 1223, 566, 220, 220, 195, 182, 245, 280, 27205, 7806, 7620, 10686, 20645, 7903, 8699, 17764, 17418, 1202, 8370, 21745, 17516, 18484, 15880, 12287, 890, 37464, 16860, 15368, 19214, 6842, 15965, 1102, 16208, 442, 235, 233, 235, 0, 0};
   char temp_array[CHARACTER_COUNT];
 
-  for (int i = 0; i < CHARACTER_COUNT; i++)
+  int i;
+  for (i = 0; i < CHARACTER_COUNT; i++)
   {
     character_array[i] = i;
   }
