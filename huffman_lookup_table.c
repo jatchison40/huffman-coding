@@ -209,13 +209,15 @@ void extract_encode_bit_combination(struct TreeNode *node, char array[], int arr
 void build_lookup_table()
 {
     struct TreeNode *p = head;
-    for (int index = 0; index < LOOKUP_TABLE_SIZE; index++)
+    int index;
+    for (index = 0; index < LOOKUP_TABLE_SIZE; index++)
     {
         int length = 0;
         int leaf_found = 0;
 
         // loops through all lookup table indexes and traverses tree following the bits of the index
-        for (int bit_index = LOOKUP_TABLE_INDEX_SIZE; bit_index > 0; bit_index--)
+        int bit_index;
+        for (bit_index = LOOKUP_TABLE_INDEX_SIZE; bit_index > 0; bit_index--)
         {
             int digit = 1 << (bit_index - 1) & index;
             if (digit == 0)
@@ -252,8 +254,8 @@ int binary_to_int(char s[], int length)
     // convert binary string to decimal representation so that we can index lookup table
     int value = 0;
     int bitValue = 1;
-
-    for (int i = length - 1; i >= 0; i--)
+    int i;
+    for (i = length - 1; i >= 0; i--)
     {
         if (s[i] == '1')
             value += bitValue;
@@ -278,7 +280,8 @@ int read_buffer_bits(int length, int offset, FILE *input_file)
     // Since we need to read LOOKUP_TABLE_INDEX_SIZE bits, might need to read multiple bytes
     while (read_bits < length)
     {
-        for (int bit_index = 7; bit_index >= first_byte_offset; bit_index--)
+        int bit_index;
+        for (bit_index = 7; bit_index >= first_byte_offset; bit_index--)
         {
             // reads bit by bit from byte and fills binary_array until binary_array is full
             int digit = 1 << (bit_index)&inputbyte;
