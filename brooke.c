@@ -404,7 +404,7 @@ int main(int argc, char *argv[])
     if (argc != 3)
     {
         printf("ERROR MODIFIED! Incorrect number of arguments. Try: ./huffman <input.txt> <output.txt>\n");
-        exit(1);
+        // exit(1);
     }
     printf("ENTERED MAIN");
 
