@@ -472,6 +472,6 @@ int main(int argc, char *argv[])
     end_t = clock();
 
     total_t = (end_t - start_t);
-    printf("Total time taken by CPU: %ld\n", total_t);
+    printf("Total clock cycles taken by CPU: %ld\n", total_t);
     return 0;
 }
