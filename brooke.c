@@ -402,11 +402,8 @@ int main(int argc, char *argv[])
 {
     printf("ENTERED MAIN");
     printf("ENTERED MAIN");
-    if (argc != 3)
-    {
-        printf("ERROR MODIFIED! Incorrect number of arguments. Try: ./huffman <input.txt> <output.txt>\n");
-        // exit(1);
-    }
+
+    printf("ENTERED MAIN");
 
     clock_t start_t, end_t;
     long total_t;
