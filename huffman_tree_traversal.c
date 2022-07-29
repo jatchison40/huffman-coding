@@ -6,24 +6,24 @@
 
 struct TreeNode
 {
-  char data;
+  signed char data;
   int freq;
 
   struct TreeNode *left, *right, *child1, *child2;
 };
 
-struct TreeNode *create_node(char data, int freq);
+struct TreeNode *create_node(signed char data, int freq);
 struct TreeNode *create_parent_node(int freq1, int freq2);
-void insert_node(char data, int freq);
+void insert_node(signed char data, int freq);
 void insert_parent_node(int data, int freq);
-void create_node_linked_list(char character_array[], int character_frequency[]);
+void create_node_linked_list(signed char character_array[], int character_frequency[]);
 void print_list();
 void print_list_reverse();
 void print_node(struct TreeNode *list_pointer);
 void create_huffman_tree();
 void detach_node(struct TreeNode *node);
 int is_leaf_node(struct TreeNode *node);
-void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int array_index);
+void extract_encode_bit_combinaion(struct TreeNode *node, signed char array[], int array_index);
 void load_frequency(char *input_filename, int character_frequency[]);
 void encode_input_text(char *input_filename, char *output_filename);
 void pure_huffman_decoding(char *input_filename, char *output_filename);
@@ -35,7 +35,7 @@ unsigned char encode_array_length[CHARACTER_COUNT];
 
 int list_size = 0;
 
-struct TreeNode *create_node(char data, int freq)
+struct TreeNode *create_node(signed char data, int freq)
 {
   struct TreeNode *temp = (struct TreeNode *)malloc(sizeof(struct TreeNode));
   temp->left = temp->right = temp->child1 = temp->child2 = NULL;
@@ -53,7 +53,7 @@ struct TreeNode *create_parent_node(int freq1, int freq2)
   return temp;
 }
 
-void insert_node(char data, int freq)
+void insert_node(signed char data, int freq)
 {
   if (head == NULL)
   {
@@ -83,10 +83,11 @@ void insert_parent_node(int data, int freq)
   list_size++;
 }
 
-void create_node_linked_list(char character_array[], int character_frequency[])
+void create_node_linked_list(signed char character_array[], int character_frequency[])
 {
   int count = 0;
-  for (int i = 0; i < CHARACTER_COUNT; i++)
+  int i;
+  for (i = 0; i < CHARACTER_COUNT; i++)
   {
     if (character_frequency[i] > 0)
     {
@@ -158,7 +159,6 @@ void create_huffman_tree()
       }
       list_pointer = list_pointer->right;
     }
-    // printf("Loop done\n");
     insert_parent_node(smallest_pointer->freq, second_smallest_pointer->freq);
     tail->child1 = smallest_pointer;
     tail->child2 = second_smallest_pointer;
@@ -166,7 +166,6 @@ void create_huffman_tree()
     detach_node(second_smallest_pointer);
     list_pointer = smallest_pointer = head;
     second_smallest_pointer = NULL;
-    // print_list();
   }
 }
 
@@ -204,7 +203,7 @@ int is_leaf_node(struct TreeNode *node)
   return node->data != -1;
 }
 
-void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int array_index)
+void extract_encode_bit_combinaion(struct TreeNode *node, signed char array[], int array_index)
 {
   if (node != NULL)
   {
@@ -215,24 +214,15 @@ void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int arra
       int bit_count = 0;
       int prefix = 0;
       int prefix_flag = 0;
-      printf("-----------------------------------\n");
-      for (int i = 0; i < array_index; i++)
+      int i;
+      for (i = 0; i < array_index; i++)
       {
-        printf("%d", array[i]);
         encode_array[node->data][i] = array[i];
         bit_combination = bit_combination << 1 | array[i];
         bit_count++;
       }
-      printf("\n");
-      printf("-----------------------------------\n");
 
       encode_array_length[node->data] = array_index;
-      printf("Node:%c, Code:", node->data);
-      for (int i = 0; i < array_index; i++)
-      {
-        printf("%d", array[i]);
-      }
-      printf("\n");
       return;
     }
     if (node->child1 != NULL)
@@ -282,10 +272,9 @@ void encode_input_text(char *input_filename, char *output_filename)
   while (input_c != EOF)
   {
 
-    // printf("--> %c, %d, = ", input_c, encode_array_length[input_c]);
-    for (int i = 0; i < encode_array_length[input_c]; i++)
+    int i;
+    for (i = 0; i < encode_array_length[input_c]; i++)
     {
-      // printf("%d", encode_array[input_c][i]);
       if (bitcount == 8)
       {
         fputc(output_byte_buffer, output_file);
@@ -296,14 +285,12 @@ void encode_input_text(char *input_filename, char *output_filename)
       output_byte_buffer = output_byte_buffer << 1 | encode_array[input_c][i];
       bitcount++;
     }
-    // printf("\n");
     input_c = fgetc(input_file);
   }
   int padding_bits_count = 0;
   if (bitcount != 0)
   {
     padding_bits_count = 8 - bitcount;
-    // printf("PADDING BITS COUNT: %d\n", padding_bits_count);
     while (bitcount != 8)
     {
       output_byte_buffer = output_byte_buffer << 1;
@@ -333,10 +320,10 @@ void pure_huffman_decoding(char *input_filename, char *output_filename)
   }
 
   struct TreeNode *pointer = head;
-  unsigned char input_c = fgetc(input_file);
-  unsigned char input_c2 = fgetc(input_file);
-  unsigned char input_c3 = fgetc(input_file);
-  unsigned char buffer_byte = input_c;
+  signed char input_c = fgetc(input_file);
+  signed char input_c2 = fgetc(input_file);
+  signed char input_c3 = fgetc(input_file);
+  signed char buffer_byte = input_c;
   int bit_count = 0;
   int bit;
   int EOF_flag = 1;
@@ -402,16 +389,17 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  char character_array[CHARACTER_COUNT];
+  signed char character_array[CHARACTER_COUNT];
   int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17691, 240, 213, 283, 150, 200, 222, 254, 842, 905, 350, 601, 6741, 2660, 6265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 250, 1603, 226, 1426, 350, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 250, 516, 1829, 2844, 300, 300, 1140, 1577, 1223, 566, 220, 220, 195, 182, 245, 280, 27205, 7806, 7620, 10686, 20645, 7903, 8699, 17764, 17418, 1202, 8370, 21745, 17516, 18484, 15880, 12287, 890, 37464, 16860, 15368, 19214, 6842, 15965, 1102, 16208, 442, 235, 233, 235, 0, 0};
-  char temp_array[CHARACTER_COUNT];
+  signed char temp_array[CHARACTER_COUNT];
 
-  for (int i = 0; i < CHARACTER_COUNT; i++)
+  int i;
+  for (i = 0; i < CHARACTER_COUNT; i++)
   {
     character_array[i] = i;
   }
 
-  create_node_linked_list(character_array, character_frequency); // creates doubly linked list of nodes containning char and freq
+  create_node_linked_list(character_array, character_frequency);
   create_huffman_tree();
   extract_encode_bit_combinaion(head, temp_array, 0);
 
