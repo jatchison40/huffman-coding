@@ -92,7 +92,8 @@ void insert_parent_node(int data, int freq)
 void create_node_linked_list(char character_array[], int character_frequency[])
 {
 
-    for (int i = 0; i < CHARACTER_COUNT; i++)
+    int i;
+    for (i = 0; i < CHARACTER_COUNT; i++)
     {
         if (character_frequency[i] > 0)
         {
@@ -183,7 +184,8 @@ void extract_encode_bit_combination(struct TreeNode *node, char array[], int arr
         if (is_leaf_node(node))
         {
             array[array_index] = '\0';
-            for (int i = 0; i <= array_index; i++)
+            int i;
+            for (i = 0; i <= array_index; i++)
             {
                 encode_array[node->data][i] = array[i];
             }
@@ -384,7 +386,8 @@ void encode_input_text(char *input_filename, char *output_filename)
     while (input_c != EOF)
     {
         // this translates code contained in encode_array to its binary equivalent, then outputs the bits as a char every 8 bits
-        for (int i = 0; i < encode_array_length[input_c]; i++)
+        int i;
+        for (i = 0; i < encode_array_length[input_c]; i++)
         {
             if (bitcount == 8)
             {
@@ -437,7 +440,8 @@ int main(int argc, char *argv[])
     int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17691, 240, 213, 283, 150, 200, 222, 254, 842, 905, 350, 601, 6741, 2660, 6265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 250, 1603, 226, 1426, 350, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 250, 516, 1829, 2844, 300, 300, 1140, 1577, 1223, 566, 220, 220, 195, 182, 245, 280, 57205, 7806, 7620, 10686, 40645, 7903, 8699, 17764, 17418, 1202, 8370, 17745, 17516, 18484, 15880, 12287, 890, 37464, 16860, 15368, 19214, 6842, 15965, 1102, 16208, 442, 235, 233, 235, 0, 0};
     char temp_array[CHARACTER_COUNT];
 
-    for (int i = 0; i < CHARACTER_COUNT; i++)
+    int i;
+    for (i = 0; i < CHARACTER_COUNT; i++)
     {
         character_array[i] = i;
     }
