@@ -333,11 +333,12 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
     total_bits = total_bits | fgetc(input_file) << 8;
     total_bits = total_bits | fgetc(input_file);
 
-    int processed_bits = 0;
+    register int processed_bits = 0;
     int offset;
     int current_byte;
     int ending_bits = -1;
     int length = LOOKUP_TABLE_INDEX_SIZE;
+    int lookup_index;
 
     while (1)
     {
@@ -353,9 +354,10 @@ void decode_with_lookup_table(char *input_filename, char *output_filename)
         }
 
         // Get lookup index
-        int lookup_index = read_buffer_bits(length, offset, input_file);
+        lookup_index = read_buffer_bits(length, offset, input_file);
 
         // output decoded char to file and update processed bit count
+        // processed_bits = processed_bits + decode_lookup[lookup_index][1];
         processed_bits = processed_bits + decode_lookup[lookup_index][1];
         fputc(decode_lookup[lookup_index][0], output_file);
 
