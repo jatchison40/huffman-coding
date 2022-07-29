@@ -128,6 +128,7 @@ void print_node(struct TreeNode *list_pointer)
   }
 }
 
+// Used to convert a linked list of nodes to a huffman tree by making the least frequent nodes the children of a new parent node
 void create_huffman_tree()
 {
   struct TreeNode *list_pointer = head;
@@ -204,6 +205,7 @@ int is_leaf_node(struct TreeNode *node)
   return node->data != -1;
 }
 
+// traverse the tree to extract each leaf's bit combinations and add it to an array for encoding files
 void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int array_index)
 {
   if (node != NULL)
@@ -257,6 +259,7 @@ void load_frequency(char *input_filename, int character_frequency[])
   fclose(fp);
 }
 
+// go through the input file and encode it
 void encode_input_text(char *input_filename, char *output_filename)
 {
   FILE *input_file = fopen(input_filename, "rb");
@@ -309,6 +312,7 @@ void encode_input_text(char *input_filename, char *output_filename)
   fclose(output_file);
 }
 
+// read the encoded file bit by bit and use it to traverse the huffman tree for decoding
 void pure_huffman_decoding(char *input_filename, char *output_filename)
 {
   FILE *input_file = fopen(input_filename, "rb");
