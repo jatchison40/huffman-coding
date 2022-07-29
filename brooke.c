@@ -401,11 +401,11 @@ void pure_huffman_decoding(char *input_filename, char *output_filename)
 int main(int argc, char *argv[])
 {
     printf("ENTERED MAIN");
-    if (argc != 3)
-    {
-        printf("ERROR MODIFIED! Incorrect number of arguments. Try: ./huffman <input.txt> <output.txt>\n");
-        exit(1);
-    }
+    // if (argc != 3)
+    // {
+    //     printf("ERROR MODIFIED! Incorrect number of arguments. Try: ./huffman <input.txt> <output.txt>\n");
+    //     exit(1);
+    // }
     printf("ENTERED MAIN");
 
     clock_t start_t, end_t;
@@ -432,10 +432,10 @@ int main(int argc, char *argv[])
     extract_encode_bit_combinaion(head, temp_array, 0);
     printf("ENCODE");
 
-    encode_input_text(argv[1], argv[2]);
+    encode_input_text("best_case.txt", "output.txt");
     printf("STARTING DECODE");
     start_t = clock();
-    pure_huffman_decoding(argv[2], "decoded.txt");
+    pure_huffman_decoding("output.txt", "decoded.txt");
     printf("END DECODE");
     end_t = clock();
     total_t = (end_t - start_t);
