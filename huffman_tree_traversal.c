@@ -16,14 +16,14 @@ struct TreeNode *create_node(signed char data, int freq);
 struct TreeNode *create_parent_node(int freq1, int freq2);
 void insert_node(signed char data, int freq);
 void insert_parent_node(int data, int freq);
-void create_node_linked_list(signed char character_array[], int character_frequency[]);
+void create_node_linked_list(char character_array[], int character_frequency[]);
 void print_list();
 void print_list_reverse();
 void print_node(struct TreeNode *list_pointer);
 void create_huffman_tree();
 void detach_node(struct TreeNode *node);
 int is_leaf_node(struct TreeNode *node);
-void extract_encode_bit_combinaion(struct TreeNode *node, signed char array[], int array_index);
+void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int array_index);
 void load_frequency(char *input_filename, int character_frequency[]);
 void encode_input_text(char *input_filename, char *output_filename);
 void pure_huffman_decoding(char *input_filename, char *output_filename);
@@ -83,7 +83,7 @@ void insert_parent_node(int data, int freq)
   list_size++;
 }
 
-void create_node_linked_list(signed char character_array[], int character_frequency[])
+void create_node_linked_list(char character_array[], int character_frequency[])
 {
   int count = 0;
   int i;
@@ -203,7 +203,7 @@ int is_leaf_node(struct TreeNode *node)
   return node->data != -1;
 }
 
-void extract_encode_bit_combinaion(struct TreeNode *node, signed char array[], int array_index)
+void extract_encode_bit_combinaion(struct TreeNode *node, char array[], int array_index)
 {
   if (node != NULL)
   {
@@ -247,7 +247,7 @@ void load_frequency(char *input_filename, int character_frequency[])
     printf("Error: Filename could not be opened\n");
     exit(2);
   }
-  signed char c = fgetc(fp);
+  char c = fgetc(fp);
   while (c != EOF)
   {
     character_frequency[c]++;
@@ -267,7 +267,7 @@ void encode_input_text(char *input_filename, char *output_filename)
   }
 
   signed char input_c = fgetc(input_file);
-  signed char output_byte_buffer = 0;
+  char output_byte_buffer = 0;
   int bitcount = 0;
   while (input_c != EOF)
   {
@@ -320,10 +320,10 @@ void pure_huffman_decoding(char *input_filename, char *output_filename)
   }
 
   struct TreeNode *pointer = head;
-  signed char input_c = fgetc(input_file);
-  signed char input_c2 = fgetc(input_file);
-  signed char input_c3 = fgetc(input_file);
-  signed char buffer_byte = input_c;
+  char input_c = fgetc(input_file);
+  char input_c2 = fgetc(input_file);
+  char input_c3 = fgetc(input_file);
+  char buffer_byte = input_c;
   int bit_count = 0;
   int bit;
   int EOF_flag = 1;
@@ -389,9 +389,9 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  signed char character_array[CHARACTER_COUNT];
+  char character_array[CHARACTER_COUNT];
   int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17691, 240, 213, 283, 150, 200, 222, 254, 842, 905, 350, 601, 6741, 2660, 6265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 250, 1603, 226, 1426, 350, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 250, 516, 1829, 2844, 300, 300, 1140, 1577, 1223, 566, 220, 220, 195, 182, 245, 280, 27205, 7806, 7620, 10686, 20645, 7903, 8699, 17764, 17418, 1202, 8370, 21745, 17516, 18484, 15880, 12287, 890, 37464, 16860, 15368, 19214, 6842, 15965, 1102, 16208, 442, 235, 233, 235, 0, 0};
-  signed char temp_array[CHARACTER_COUNT];
+  char temp_array[CHARACTER_COUNT];
 
   int i;
   for (i = 0; i < CHARACTER_COUNT; i++)
