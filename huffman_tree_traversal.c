@@ -247,7 +247,7 @@ void load_frequency(char *input_filename, int character_frequency[])
     printf("Error: Filename could not be opened\n");
     exit(2);
   }
-  char c = fgetc(fp);
+  signed char c = fgetc(fp);
   while (c != EOF)
   {
     character_frequency[c]++;
@@ -266,8 +266,8 @@ void encode_input_text(char *input_filename, char *output_filename)
     exit(3);
   }
 
-  char input_c = fgetc(input_file);
-  char output_byte_buffer = 0;
+  signed char input_c = fgetc(input_file);
+  signed char output_byte_buffer = 0;
   int bitcount = 0;
   while (input_c != EOF)
   {

@@ -306,8 +306,8 @@ void encode_input_text(char *input_filename, char *output_filename)
     exit(3);
   }
 
-  char input_c = fgetc(input_file);
-  char output_byte_buffer = 0;
+  signed char input_c = fgetc(input_file);
+  signed char output_byte_buffer = 0;
   int bitcount = 0;
   while (input_c != EOF)
   {
@@ -362,10 +362,10 @@ void huffman_array_hybrid_decoding(char *input_filename, char *output_filename)
   }
 
   struct TreeNode *pointer = head;
-  unsigned char input_c = fgetc(input_file);
-  unsigned char input_c2 = fgetc(input_file);
-  unsigned char input_c3 = fgetc(input_file);
-  unsigned char buffer_byte = input_c;
+  signed char input_c = fgetc(input_file);
+  signed char input_c2 = fgetc(input_file);
+  signed char input_c3 = fgetc(input_file);
+  signed char buffer_byte = input_c;
   int bit_count = 0;
   int EOF_flag = 1;
 
@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
 
   signed char character_array[CHARACTER_COUNT];
   int character_frequency[CHARACTER_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 7821, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17691, 240, 213, 283, 150, 200, 222, 254, 842, 905, 350, 601, 6741, 2660, 6265, 442, 713, 1240, 1380, 890, 610, 633, 348, 250, 249, 306, 775, 220, 250, 1603, 226, 1426, 350, 2877, 991, 803, 952, 652, 461, 486, 2146, 4308, 235, 342, 842, 605, 850, 706, 463, 250, 516, 1829, 2844, 300, 300, 1140, 1577, 1223, 566, 220, 220, 195, 182, 245, 280, 27205, 7806, 7620, 10686, 20645, 7903, 8699, 17764, 17418, 1202, 8370, 21745, 17516, 18484, 15880, 12287, 890, 37464, 16860, 15368, 19214, 6842, 15965, 1102, 16208, 442, 235, 233, 235, 0, 0};
-  char temp_array[CHARACTER_COUNT];
+  signed char temp_array[CHARACTER_COUNT];
 
   int i;
   for (i = 0; i < CHARACTER_COUNT; i++)
